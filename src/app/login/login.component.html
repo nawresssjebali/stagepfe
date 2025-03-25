@@ -1,0 +1,41 @@
+<div class="bg-img">
+  <div class="content">
+    <header>Login Form</header>
+    <form (ngSubmit)="submitLoginForm()" #loginForm="ngForm">
+      <div class="field">
+        <span class="fa fa-user"></span>
+        <input type="text" 
+               [(ngModel)]="loginData.email" 
+               name="email" 
+               required 
+               placeholder="Email or Phone"
+               #email="ngModel">
+        <div *ngIf="email.invalid && email.touched" class="error">Email is required</div>
+      </div>
+      <div class="field space">
+        <span class="fa fa-lock"></span>
+        <input type="password" 
+               [(ngModel)]="loginData.password" 
+               name="password" 
+               [type]="passwordVisible ? 'text' : 'password'" 
+               class="pass-key" 
+               required 
+               placeholder="Password"
+               #password="ngModel">
+        <span class="show" (click)="togglePassword()">{{ passwordVisible ? 'HIDE' : 'SHOW' }}</span>
+        <div *ngIf="password.invalid && password.touched" class="error">Password is required</div>
+      </div>
+      <div class="pass">
+        <a href="#">Forgot Password?</a>
+      </div>
+      <div class="field">
+        <input type="submit" value="LOGIN" [disabled]="loginForm.invalid">
+      </div>
+    </form>
+    <!-- Removed Facebook and Instagram login options -->
+    <div class="signup">
+      Don't have an account?
+      <a (click)="goToRegister()">Signup Now</a>
+    </div>
+  </div>
+</div>
