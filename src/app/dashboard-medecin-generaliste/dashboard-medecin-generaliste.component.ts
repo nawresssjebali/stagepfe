@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 export class DashboardMedecinGeneralisteComponent implements OnInit {
   user: any;
   doctorPhotoUrl: string | null = null;
+  showProfileSettings = false;
 
   constructor(private http: HttpClient) {}
 
@@ -41,4 +42,12 @@ export class DashboardMedecinGeneralisteComponent implements OnInit {
   
     console.log('Generated photo URL:', this.doctorPhotoUrl);
   }
+  // In your component.ts file
+
+
+onShowProfileSettings() {
+  this.showProfileSettings = true;
+  // You can also hide other sections here by setting their flags to false
+}
+
 }  
