@@ -1,1 +1,79 @@
-<p>dashboard-medecin-generaliste works!</p>
+<body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>Dashboard</h2>
+        <h3>🧑‍⚕️ Account</h3>
+        <div class="nav-link">Profile Settings</div>
+        <div class="nav-link">Delete Account</div>
+        <h3>📤 ECG Actions</h3>
+        <div class="nav-link">Send to Doctor</div>
+        <div class="nav-link">Send to All Cardiologists</div>
+        <div class="nav-link">Modify & Save Draft</div>
+        <div class="nav-link">AI ECG Interpretation</div>
+        <h3>📅 Consultations</h3>
+        <div class="nav-link">Schedule a Call</div>
+        <h3>📂 Records</h3>
+        <div class="nav-link">Manage Drafts</div>
+        <div class="nav-link">Answered Queries</div>
+        <h3>🔧 Support</h3>
+        <div class="nav-link">FAQ</div>
+        <div class="nav-link">Report Security Issues</div>
+      </div>
+  
+      <!-- Doctor Photo (top-right corner of the dashboard) -->
+      <div *ngIf="doctorPhotoUrl; else photoError" class="photo-corner">
+        <img [src]="doctorPhotoUrl" alt="Doctor's Photo" id="doctor-photo" />
+      </div>
+  
+      <ng-template #photoError>
+        <p>Photo not found or failed to load. Please check the console for errors.</p>
+      </ng-template>
+  
+      <!-- Main content -->
+      <div class="dashboard-wrapper">
+        <div class="main-content">
+          
+          <div class="hippocratic-oath">
+            <h2>🩺 Modern Hippocratic Oath</h2>
+            <p>
+              I swear to fulfill, to the best of my ability and judgment, this covenant:
+              <br><br>
+              I will respect the hard-won scientific gains of those physicians in whose steps I walk,
+              and gladly share such knowledge as is mine with those who are to follow.
+              <br><br>
+              I will apply, for the benefit of the sick, all measures [that] are required,
+              avoiding those twin traps of overtreatment and therapeutic nihilism.
+              <br><br>
+              I will remember that there is art to medicine as well as science,
+              and that warmth, sympathy, and understanding may outweigh the surgeon's knife or the chemist’s drug.
+              <br><br>
+              I will not be ashamed to say "I know not," nor will I fail to call in my colleagues
+              when the skills of another are needed for a patient’s recovery.
+              <br><br>
+              I will respect the privacy of my patients, for their problems are not disclosed to me that the world may know.
+              <br><br>
+              Most especially must I tread with care in matters of life and death. If it is given me to save a life, all thanks.
+              But it may also be within my power to take a life; this awesome responsibility must be faced with great humbleness
+              and awareness of my own frailty.
+              <br><br>
+              I will remember that I do not treat a fever chart, a cancerous growth, but a sick human being,
+              whose illness may affect the person’s family and economic stability. My responsibility includes these related problems,
+              if I am to care adequately for the sick.
+              <br><br>
+              I will prevent disease whenever I can, for prevention is preferable to cure.
+              <br><br>
+              I will remember that I remain a member of society, with special obligations to all my fellow human beings,
+              those sound of mind and body as well as the infirm.
+              <br><br>
+              If I do not violate this oath, may I enjoy life and art, respected while I live and remembered with affection thereafter.
+              <br><br>
+              May I always act so as to preserve the finest traditions of my calling and may I long experience the joy
+              of healing those who seek my help.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  

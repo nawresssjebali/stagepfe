@@ -26,8 +26,9 @@
         <div *ngIf="password.invalid && password.touched" class="error">Password is required</div>
       </div>
       <div class="pass">
-        <a href="#">Forgot Password?</a>
+        <a (click)="goToForgetPassword()" style="cursor: pointer;">Forgot Password?</a>
       </div>
+      
       <div class="field">
         <input type="submit" value="LOGIN" [disabled]="loginForm.invalid">
       </div>

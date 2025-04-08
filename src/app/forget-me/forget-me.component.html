@@ -1,0 +1,44 @@
+<body>
+    <div class="container">
+        <div class="section white">
+            <div class="right">
+                <h1>MedConnect</h1>
+            </div>
+            <div class="left">
+                <form class="form-horizontal">
+                    <div class="input-group">
+                        <input type="text" id="address" name="address" placeholder="Adresse" required>
+                        <input type="password" id="password" name="password" placeholder="Mot de passe" required>
+                        <button type="submit" class="connexion-button">Connexion</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="section red">
+            <div class="rectangle">
+                <div class="rectangle-title">FIND YOUR ACCOUNT</div>
+                <div class="title-underline"></div>
+                <p class="rectangle-text">
+                    Enter your email or phone number to search for your account.
+                </p>
+                <div class="input-rectangle">
+                
+                    <input type="text" id="email" name="email" placeholder="Enter your email or phone number" required />
+                    </div>
+                    <div class="input-line"></div>
+                    <div class="button-container">
+                        <button class="search-button" (click)=" onSearchEmail()">Search</button>
+                        <!-- Example of the Cancel button in your HTML template -->
+                        <button class="cancel-button" (click)="goToForgetPassword()">Cancel</button>
+
+                    </div>
+                
+            </div>
+            
+            
+            
+        </div>
+        <div class="section white_one"></div>
+    </div>
+</body>

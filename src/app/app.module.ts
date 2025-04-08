@@ -17,10 +17,11 @@ import { CommonModule } from '@angular/common';
   imports: [
     BrowserModule,
     FormsModule,  // Import FormsModule
-    HttpClientModule,
-    CommonModule  // Import HttpClientModule
+    HttpClientModule, // Import HttpClientModule for HTTP requests
+    CommonModule  // CommonModule is already part of BrowserModule, so you might not need to import it again
   ],
   providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+

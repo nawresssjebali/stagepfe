@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-root',
   standalone: true,  // Makes the component standalone (Angular 14+ feature)
-  imports: [CommonModule, RouterOutlet, LoginComponent,FormsModule],  // Include routing and necessary components
+  imports: [CommonModule, RouterOutlet,FormsModule],  // Include routing and necessary components
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
