@@ -7,6 +7,9 @@ import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';  // Assuming login component exists
 import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+
 
 @NgModule({
   declarations: [
@@ -18,7 +21,8 @@ import { CommonModule } from '@angular/common';
     BrowserModule,
     FormsModule,  // Import FormsModule
     HttpClientModule, // Import HttpClientModule for HTTP requests
-    CommonModule  // CommonModule is already part of BrowserModule, so you might not need to import it again
+    CommonModule ,
+    ToastrModule.forRoot(),  // CommonModule is already part of BrowserModule, so you might not need to import it again
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-reset-password',
@@ -25,41 +25,79 @@ export class ResetPasswordComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log("ResetPasswordComponent initialized.");
+    console.log('🔧 ResetPasswordComponent initialized.');
     this.route.paramMap.subscribe(params => {
       this.token = params.get('token');
-      console.log("Received token:", this.token);
+      console.log('🔑 Received token:', this.token);
     });
   }
-  
-  
-  // Function to log error to backend
+
+  // Function to log errors to the backend
   logErrorToBackend(logMessage: string): void {
+    console.log('📤 Logging error to backend:', logMessage);
     this.http.post('http://localhost:5000/log-error', { message: logMessage })
-      .subscribe(() => console.log("Error logged to backend"));
+      .subscribe({
+        next: () => console.log('✅ Error successfully logged to backend'),
+        error: err => console.error('❌ Failed to log error to backend:', err)
+      });
   }
 
-  onResetPassword(): void {
+  onResetPassword(form: NgForm): void {
+    console.log('🔁 Form submitted!');
+  
+    if (form.invalid) {
+      console.log('⚠️ Form is invalid.');
+      return;
+    }
+  
+    console.log('Form Valid:', form.valid); // This should print "true" if form is valid
+    console.log('New Password:', this.newPassword);
+    console.log('Confirm Password:', this.confirmPassword);
+  
     // Check if the passwords match
     if (this.newPassword !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match.';
+      console.warn('⚠️ Passwords do not match');
+      this.logErrorToBackend('Password mismatch attempt during reset.');
       return;
     }
-
-    // Send the request to reset the password
-    this.http.post('http://localhost:5000/reset-password', { token: this.token, password: this.newPassword })
-      .subscribe(
-        (response: any) => {
+  
+    if (!this.token) {
+      this.errorMessage = 'Invalid or missing reset token.';
+      console.error('❌ No token found.');
+      this.logErrorToBackend('No reset token provided.');
+      return;
+    }
+  
+    const payload = {
+      token: this.token,
+      password: this.newPassword
+    };
+  
+    console.log('📡 Sending password reset request with payload:', payload);
+  
+    this.http.post('http://localhost:5000/reset-password', payload)
+      .subscribe({
+        next: (response: any) => {
+          console.log('📥 Response from server:', response);
           if (response.success) {
             this.successMessage = 'Password has been successfully reset!';
-            setTimeout(() => this.router.navigate(['/login']), 5000); // Redirect to login after 5 seconds
+            console.log('✅ Password reset successful!');
+            setTimeout(() => {
+              console.log('➡️ Redirecting to login page...');
+              this.router.navigate(['/login']);
+            }, 5000);
           } else {
             this.errorMessage = response.message || 'An error occurred while resetting your password.';
+            console.warn('⚠️ Server responded with an error:', this.errorMessage);
+            this.logErrorToBackend(this.errorMessage);
           }
         },
-        (error) => {
-          console.error('Error resetting password:', error);
+        error: (error) => {
+          console.error('❌ Error resetting password:', error);
           this.errorMessage = 'An error occurred while resetting your password. Please try again.';
+          this.logErrorToBackend(`Reset password API failed: ${JSON.stringify(error)}`);
         }
-      );
-  }}
+      });
+  }
+}

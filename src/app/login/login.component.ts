@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule,],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -63,16 +63,13 @@ export class LoginComponent implements OnInit {
 
         // Check for successful login (based on your backend response structure)
         if (response?.user) {
-<<<<<<< HEAD
-=======
+
           localStorage.setItem('user', JSON.stringify(response.user));
           console.log('User data saved to localStorage:', response.user);
 
           // If login is successful, navigate to the dashboard or home page
           this.router.navigate(['/dashboard-medecin-generaliste']);
           console.log('Login successful, navigating to dashboard');
-
->>>>>>> 8243676 (interface medecin general version 1)
           const user = response.user;
           const specialty = user.specialty.trim().toLowerCase(); // Trim and make case insensitive
 
@@ -91,10 +88,7 @@ export class LoginComponent implements OnInit {
             alert(this.responseMessage);
             console.error('Specialty not recognized:', specialty);
           }
-<<<<<<< HEAD
-=======
 
->>>>>>> 8243676 (interface medecin general version 1)
         } else {
           // If login failed, display an error message
           this.responseMessage = response?.message || 'Login failed. Please check your credentials.';
@@ -129,9 +123,7 @@ export class LoginComponent implements OnInit {
         console.error('Error during login request:', error);
       }
     );
-<<<<<<< HEAD
-}}
-=======
+
 
   }
   goToForgetPassword() {
@@ -141,4 +133,3 @@ export class LoginComponent implements OnInit {
   
 }
 
->>>>>>> 8243676 (interface medecin general version 1)

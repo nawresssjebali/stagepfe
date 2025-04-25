@@ -5,10 +5,12 @@
                 <h1>MedConnect</h1>
             </div>
             <div class="left">
-                <form class="form-horizontal">
+                <!-- Add ngSubmit to trigger the login method -->
+                <form class="form-horizontal" (ngSubmit)="onLoginClick()">
                     <div class="input-group">
-                        <input type="text" id="address" name="address" placeholder="Adresse" required>
-                        <input type="password" id="password" name="password" placeholder="Mot de passe" required>
+                        <!-- Two-way binding with ngModel -->
+                        <input type="text" id="address" name="address" placeholder="Adresse" [(ngModel)]="loginData.email" required>
+                        <input type="password" id="password" name="password" placeholder="Mot de passe" [(ngModel)]="loginData.password" required>
                         <button type="submit" class="connexion-button">Connexion</button>
                     </div>
                 </form>
@@ -23,22 +25,19 @@
                     Enter your email or phone number to search for your account.
                 </p>
                 <div class="input-rectangle">
-                
                     <input type="text" id="email" name="email" placeholder="Enter your email or phone number" required />
-                    </div>
-                    <div class="input-line"></div>
-                    <div class="button-container">
-                        <button class="search-button" (click)=" onSearchEmail()">Search</button>
-                        <!-- Example of the Cancel button in your HTML template -->
-                        <button class="cancel-button" (click)="goToForgetPassword()">Cancel</button>
-
-                    </div>
-                
+                </div>
+                <div class="input-line"></div>
+                <div class="button-container">
+                    <!-- Click event for search -->
+                    <button class="search-button" (click)="onSearchEmail()">Search</button>
+                    <button class="cancel-button" (click)="goToForgetPassword()">Cancel</button>
+                </div>
             </div>
-            
-            
-            
         </div>
-        <div class="section white_one"></div>
+
+        <div class="section white_one">
+            <img src="../../assets/nawrassen.png" alt="hearts" class="heart-strip" />
+        </div>
     </div>
 </body>

@@ -34,16 +34,26 @@ body, html {
 }
 
 .red {
-    background-color: #B22234;
+    background: linear-gradient(to bottom, #B22234, #8B1C2F);
     color: white;
     height: 625px;
 }
 
 .white_one {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
     background-color: white;
-    color: black;
-    height: 110px;
 }
+
+.heart-strip {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+
 
 .left {
     display: flex;
@@ -91,11 +101,24 @@ button.connexion-button:hover {
 }
 
 .right h1 {
-    font-size: 36px;
+    font-size: 40px;
+    font-weight: 700;
     color: #B22234;
-    margin-right: 430px !important;
-   
-}
+    letter-spacing: 2px;
+    font-family: 'Poppins', sans-serif;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8),
+                 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    transition: transform 0.3s ease;
+    margin: 0; /* remove unnecessary margin if not needed */
+    cursor: default;
+    margin-right: 390px;
+  }
+  
+  .right h1:hover {
+    transform: scale(1.05);
+  }
+  
 .rectangle {
     background-color: white;
     border-radius: 15px; /* Rounded corners */

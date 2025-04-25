@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -26,7 +27,7 @@ export class RegisterComponent {
   isLoading: boolean = false;  // To indicate if the form is submitting
   imagePreview: string | ArrayBuffer | null = null;  // For image preview
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private router: Router) {}
 
   // Handle photo file input change and show preview
   onFileChange(event: Event) {
@@ -69,6 +70,11 @@ export class RegisterComponent {
           this.responseMessage = 'User registered successfully!';  // Success feedback
           userForm.resetForm();  // Reset form after success
           this.imagePreview = null;  // Clear the image preview
+
+          // Add a delay before redirecting to the login page
+          setTimeout(() => {
+            this.router.navigate(['/login']);  // Navigate to login page
+          }, 2000); // Delay of 2 seconds
         },
         (error) => {
           console.error('Form submission error', error);

@@ -1,6 +1,12 @@
 <div class="bg-img">
   <div class="content">
     <header>Login Form</header>
+
+    <!-- Spinner: This will show when isLoading is true -->
+    <div *ngIf="isLoading" class="spinner-container">
+      <div class="spinner"></div>
+    </div>
+
     <form (ngSubmit)="submitLoginForm()" #loginForm="ngForm">
       <div class="field">
         <span class="fa fa-user"></span>
@@ -28,12 +34,12 @@
       <div class="pass">
         <a (click)="goToForgetPassword()" style="cursor: pointer;">Forgot Password?</a>
       </div>
-      
+
       <div class="field">
-        <input type="submit" value="LOGIN" [disabled]="loginForm.invalid">
+        <input type="submit" value="LOGIN" [disabled]="loginForm.invalid || isLoading">
       </div>
     </form>
-    <!-- Removed Facebook and Instagram login options -->
+
     <div class="signup">
       Don't have an account?
       <a (click)="goToRegister()">Signup Now</a>

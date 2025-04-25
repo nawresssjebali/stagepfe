@@ -1,14 +1,17 @@
-<body>
+
     <div class="dashboard">
       <!-- Sidebar -->
       <div class="sidebar">
         <h2>Dashboard</h2>
         <h3>🧑‍⚕️ Account</h3>
-        <!-- Sidebar -->
+        <div class="nav-link" (click)=" onLogout()">Logout</div>
         <div class="nav-link" (click)="onShowProfileSettings()">Profile Settings</div>
-        <div class="nav-link">Delete Account</div>
+    
+        <div class="nav-link" (click)="onDeleteAccount()">Delete Account</div>
+
         <h3>📤 ECG Actions</h3>
-        <div class="nav-link">Send to Doctor</div>
+        <div class="nav-link" (click)="onSendToDoctor()">Send to Doctor</div>
+
         <div class="nav-link">Send to All Cardiologists</div>
         <div class="nav-link">Modify & Save Draft</div>
         <div class="nav-link">AI ECG Interpretation</div>
@@ -33,9 +36,232 @@
   
       <!-- Main content -->
       <div class="dashboard-wrapper">
-        <div class="main-content">
+        <div *ngIf="activeSection === 'send-ecg'" class="send-ecg-container">
+          <h2>Send an ECG File</h2>
+      
+          <!-- File input -->
+          <input type="file" (change)="onECGFileSelected($event)" />
+      
+          <!-- Upload status message -->
+          <p *ngIf="ecgUploadMessage">{{ ecgUploadMessage }}</p>
+      
+          <!-- Selected file name -->
+          <div *ngIf="selectedECGFile" class="file-info">
+            Selected file: {{ selectedECGFile.name }}
+          </div>
+      
+          <!-- Emergency Level Buttons -->
+          <div class="emergency-buttons">
+            <label class="emergency-label">Emergency Level:</label>
+            <div class="btn-group">
+              <button class="emergency-btn"
+                      [class.selected]="emergencyLevel === 'normal'"
+                      (click)="emergencyLevel = 'normal'">
+                Normal
+              </button>
+              <button class="emergency-btn"
+                      [class.selected]="emergencyLevel === 'urgent'"
+                      (click)="emergencyLevel = 'urgent'">
+                Urgent
+              </button>
+              <button class="emergency-btn"
+                      [class.selected]="emergencyLevel === 'critical'"
+                      (click)="emergencyLevel = 'critical'">
+                Critical
+              </button>
+            </div>
+          </div>
+      
+          <!-- Upload button -->
+          <button class="nav-link-1" (click)="uploadECGFile()">Upload ECG</button>
+      
+          <!-- Success/Error Message -->
+          <div *ngIf="ecgUploadMessage" class="upload-message">
+            {{ ecgUploadMessage }}
+          </div>
+        </div>
+      
+        <div class="doctors-container" *ngIf="activeSection === 'send-to-doctor'">
+        
+          <div 
+          *ngFor="let doctor of generalDoctors; let i = index"
+          class="doctor-card"
+          [class.selected]="getDoctorId(doctor) === selectedDoctorId"
+          (click)="onSelectDoctor(doctor)">
           
-          <div class="hippocratic-oath">
+ 
+      
+      
+     
+
+     
+     
+
+    <!-- Doctor Image -->
+    <img [src]="'http://localhost:5000' + doctor.photo" alt="Doctor Image" class="doctor-image" />
+
+    <!-- Doctor Info -->
+    <div class="doctor-info">
+      <h3>{{ doctor.name }}</h3>
+      <p>{{ doctor.specialty }}</p>
+      <p>{{ doctor.practiceLocation }}</p>
+    </div>
+
+        
+              <div class="doctor-actions">
+                <!-- Send ECG button -->
+                <div class="nav-link-1" (click)="onSendECG($event, i, doctor)">
+    Send ECG ({{ i }})
+  </div>
+
+  <!-- Other actions -->
+  <div class="nav-link-1" >Chat ({{ i }})</div>
+  <div class="nav-link-1" >Rate ({{ i }})</div>
+  <div class="nav-link-1" >Report ({{ i }})</div>
+  <div class="nav-link-1" >Book ({{ i }})</div>
+</div>
+
+            </div>
+          </div>
+        
+        
+        
+
+        <div class="delete-card" *ngIf="activeSection === 'delete'">
+
+            <div class="card-content">
+              <p>Are you sure you want to delete your account?</p>
+              <div class="buttons">
+                <button (click)="confirmDelete()">Yes</button>
+                <button (click)="activeSection = 'oath'">No</button> <!-- back to Oath -->
+                
+                
+              </div>
+            </div>
+          </div>
+          <div *ngIf="isLoading" class="loading-indicator">
+            <div class="spinner"></div>
+            <p>Processing your request...</p>
+          </div>
+          
+          <!-- Goodbye Message -->
+          <div class="goodbye-message"*ngIf="activeSection === 'goodbye'">
+            <p>We were happy to have you among us and hope to see you again. ❤️</p>
+          </div>
+        <div class="main-content" *ngIf="activeSection === 'profile-settings'">
+          <div class="nounou"> 
+            <div class="container">
+                
+              <header>Update Practitioner Info</header>
+              <form #userForm="ngForm" (ngSubmit)="submitForm(userForm)" novalidate>
+                  <div class="form first">
+                      <div class="details personal">
+                          <span class="title">Personal Details</span>
+                          <div class="fields">
+      
+                              <!-- Full Name -->
+                              <div class="input-field">
+                                  <label>Full Name</label>
+                                  <input type="text" placeholder="Enter your name" required 
+                                      [(ngModel)]="user.name" name="name" #name="ngModel">
+                                  <div *ngIf="name.invalid && name.touched" class="error">Name is required</div>
+                              </div>
+      
+                              <!-- Address -->
+                              <div class="input-field">
+                                  <label>Address</label>
+                                  <input type="text" placeholder="Enter your address" required 
+                                      [(ngModel)]="user.address" name="address" #address="ngModel">
+                                  <div *ngIf="address.invalid && address.touched" class="error">Address is required</div>
+                              </div>
+      
+                              <!-- Email -->
+                              <div class="input-field">
+                                  <label>Email</label>
+                                  <input type="email" placeholder="Enter your email" required 
+                                      [(ngModel)]="user.email" name="email" #email="ngModel">
+                                  <div *ngIf="email.invalid && email.touched" class="error">Enter a valid email</div>
+                              </div>
+      
+                              <!-- Mobile Number -->
+                              <div class="input-field">
+                                  <label>Mobile Number</label>
+                                  <input type="text" placeholder="Enter mobile number" required 
+                                      [(ngModel)]="user.mobile" name="mobile" #mobile="ngModel"
+                                      pattern="^[0-9]{8,15}$">
+                                  <div *ngIf="mobile.invalid && mobile.touched" class="error">Enter a valid phone number</div>
+                              </div>
+      
+                              <!-- Specialty -->
+                              <div class="input-field">
+                                  <label>Specialty</label>
+                                  <select required [(ngModel)]="user.specialty" name="specialty" #specialty="ngModel">
+                                      <option disabled selected>Select specialty</option>
+                                      <option value="generaliste">Médecin Généraliste</option>
+                                      <option value="cardiologie">Expert en Cardiologie</option>
+                                  </select>
+                                  <div *ngIf="specialty.invalid && specialty.touched" class="error">Select a specialty</div>
+                              </div>
+      
+                              <!-- Place of Practice -->
+                              <div class="input-field">
+                                  <label>Place of Practice</label>
+                                  <input type="text" placeholder="Enter your practice location" required 
+                                      [(ngModel)]="user.practiceLocation" name="practiceLocation" #practiceLocation="ngModel">
+                                  <div *ngIf="practiceLocation.invalid && practiceLocation.touched" class="error">
+                                      Enter your practice location
+                                  </div>
+                              </div>
+      
+                              <!-- Password -->
+                              <div class="input-field">
+                                  <label>Password</label>
+                                  <input type="password" placeholder="Enter your password" required 
+                                      [(ngModel)]="user.password" name="password" #password="ngModel"
+                                      minlength="6">
+                                  <div *ngIf="password.invalid && password.touched" class="error">
+                                      Password must be at least 6 characters
+                                  </div>
+                              </div>
+      
+                              <!-- Upload Photo -->
+                              <div class="input-field">
+                                  <label>Upload Photo</label>
+                                  <input type="file" accept="image/*" (change)="onFileChange($event)" name="photo">
+                                  <div *ngIf="!user.photo && userForm.touched" class="error">Photo is required</div>
+      
+                                  <!-- Image Preview -->
+                                  <div *ngIf="imagePreview">
+                                      <img [src]="imagePreview" alt="Image Preview" style="max-width: 200px; max-height: 200px;">
+                                  </div>
+                              </div>
+      
+                          </div>
+                      </div>
+      
+                      <!-- Submit Button -->
+                      <button class="nextBtn" type="submit" [disabled]="userForm.invalid || !user.photo || isLoading">
+                          <span class="btnText">submit</span>
+                          <i class="uil uil-navigator"></i>
+                      </button>
+                  </div>
+              </form>
+      
+             
+              <div *ngIf="responseMessage" class="response-message">
+                  {{ responseMessage }}
+              </div>
+      
+              
+              <div *ngIf="isLoading" class="loading-indicator">
+                <div class="spinner"></div>
+                <p>Submitting...</p>
+              </div>
+          </div>
+          </div>
+          
+          </div>
+          <div *ngIf="activeSection === 'oath'" class="hippocratic-oath">
             <h2>🩺 Modern Hippocratic Oath</h2>
             <p>
               I swear to fulfill, to the best of my ability and judgment, this covenant:
@@ -73,8 +299,7 @@
               of healing those who seek my help.
             </p>
           </div>
-        </div>
+        
       </div>
     </div>
-  </body>
   
