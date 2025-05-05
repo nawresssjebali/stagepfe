@@ -64,7 +64,8 @@ const userSchema = new mongoose.Schema({
   practiceLocation: String,
   photo: String, // Store the file path
   resetPasswordToken: String, // Token for password reset
-  resetPasswordExpires: Date, // Expiration date for reset token
+  resetPasswordExpires: Date,
+  rating: { type: Number, default: null },  // Expiration date for reset token
 });
 
 // Create User Model
@@ -415,6 +416,111 @@ app.post("/upload-ecg", ecgUpload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.put('/api/doctors/:id/rate', async (req, res) => {
+  const doctorId = req.params.id;
+  const { rating } = req.body;
+
+  try {
+    // Corrected to use the 'User' model
+    const doctor = await User.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).send('Doctor not found');
+    }
+
+    // If the 'rating' field does not exist yet, create it (or it can be null initially)
+    if (doctor.rating === null) {
+      doctor.rating = rating;
+    } else {
+      // Update the rating as an average if multiple ratings exist
+      doctor.rating = (doctor.rating + rating) / 2;
+    }
+
+    await doctor.save();
+    res.status(200).json({ message: 'Rating updated successfully' });
+  } catch (err) {
+    console.error('❌ Server error during rating update:', err);
+    res.status(500).send('Error updating rating');
+  }
+});
+// Define the Report Schema
+const reportSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  reportedDoctor: { type: String, required: true },
+  reason: { type: String, required: true },
+  time: { type: Date, default: Date.now }
+});
+
+// Create the Report Model
+const Report = mongoose.model("reports", reportSchema);
+// API Route to report a doctor
+app.post("/api/doctors/:id/report", async (req, res) => {
+  const { reason } = req.body; // Get the reason from the request body
+  const reportedDoctor = req.params.id; // The reported doctor's ID (passed in the URL)
+  const username = req.body.username; // Get the username from the body or localStorage
+
+  if (!reason || !username) {
+    return res.status(400).json({ message: "Reason and username are required" });
+  }
+
+  try {
+    // Create the report object
+    const newReport = new Report({
+      username,
+      reportedDoctor,
+      reason,
+      time: new Date() // Timestamp of the report
+    });
+
+    // Save the report to MongoDB
+    await newReport.save();
+    res.status(201).json({ message: "Report saved successfully" });
+  } catch (err) {
+    console.error("Error saving report:", err);
+    res.status(500).json({ message: "Error saving the report" });
+  }
+});
+
+// Event Schema
+const eventSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  doctorId: { type: String, required: true },
+  title: { type: String, required: true },
+  date: { type: String, required: true },
+});
+
+const Event = mongoose.model('events', eventSchema);
+// Route to create/save a calendar event
+app.post('/events', async (req, res) => {
+  try {
+    const { userId, doctorId, title, date } = req.body;
+
+    const newEvent = new Event({
+      userId,
+      doctorId,
+      title,
+      date,
+    });
+
+    await newEvent.save();
+    console.log('Event saved:', newEvent);
+    res.status(201).json({ message: 'Event saved successfully', event: newEvent });
+  } catch (err) {
+    console.error('Error saving event:', err);
+    res.status(500).json({ error: 'Failed to save event' });
+  }
+});
+// Route to fetch events for a specific user
+app.get('/events', async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const events = await Event.find({ userId });
+    res.status(200).json({ events });
+  } catch (err) {
+    console.error('Error fetching events:', err);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+const cron = require("node-cron");
 
 
 // Start Server

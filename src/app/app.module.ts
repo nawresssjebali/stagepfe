@@ -1,31 +1,38 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';  // ✅ Import FormsModule for ngModel
-import { HttpClientModule } from '@angular/common/http';  // ✅ Import HttpClientModule for HTTP requests
-
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
-import { LoginComponent } from './login/login.component';  // Assuming login component exists
+import { LoginComponent } from './login/login.component';
+
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 
+// ✅ FullCalendar setup
+import { FullCalendarModule } from '@fullcalendar/angular';
+
+import dayGridPlugin from '@fullcalendar/daygrid';
+import { DashboardMedecinGeneralisteComponent } from './dashboard-medecin-generaliste/dashboard-medecin-generaliste.component'; // ✅ Add this line
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
-    LoginComponent,  // Add other components here as needed
+    LoginComponent,
+    DashboardMedecinGeneralisteComponent, // ✅ Add this component
   ],
   imports: [
     BrowserModule,
-    FormsModule,  // Import FormsModule
-    HttpClientModule, // Import HttpClientModule for HTTP requests
-    CommonModule ,
-    ToastrModule.forRoot(),  // CommonModule is already part of BrowserModule, so you might not need to import it again
+    FormsModule,
+    HttpClientModule,
+    CommonModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
+    FullCalendarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
-

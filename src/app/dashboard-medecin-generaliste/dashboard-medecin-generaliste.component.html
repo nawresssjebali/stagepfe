@@ -16,7 +16,7 @@
         <div class="nav-link">Modify & Save Draft</div>
         <div class="nav-link">AI ECG Interpretation</div>
         <h3>📅 Consultations</h3>
-        <div class="nav-link">Schedule a Call</div>
+        <div class="nav-link" (click)="scheduled events()">scheduled events</div>
         <h3>📂 Records</h3>
         <div class="nav-link">Manage Drafts</div>
         <div class="nav-link">Answered Queries</div>
@@ -36,6 +36,90 @@
   
       <!-- Main content -->
       <div class="dashboard-wrapper">
+        <div *ngIf="activeSection === 'calendar-wrapper'" class="calendar-wrapper">
+          <full-calendar [options]="calendarOptions"></full-calendar>
+
+
+        
+        
+
+
+
+          </div>
+          
+        
+        
+        
+        
+                
+        
+        
+
+        
+        
+        <div *ngIf="activeSection === 'report-doctor'" class="report-doctor">
+          <h3>Report Doctor</h3>
+          <form (ngSubmit)="onSubmit()">
+            <label for="reason">Reason for Reporting</label>
+            <textarea id="reason" [(ngModel)]="reason" name="reason" required></textarea>
+          
+            <button type="submit" [disabled]="!reason">Report</button>
+          </form>
+        </div>
+        
+
+        
+        <!-- Only show when activeSection is 'rate' -->
+        <div *ngIf="activeSection === 'rate'">
+          <div class="doctor-info">
+        
+            <!-- Doctor Image -->
+            <img 
+              [src]="'http://localhost:5000' + getSelectedDoctor()?.photo" 
+              alt="Doctor Image" 
+              class="doctor-image" 
+              *ngIf="getSelectedDoctor()?.photo" 
+            />
+            
+            <!-- Doctor Name -->
+            <h3>Rate Doctor: {{ getSelectedDoctor()?.name || 'No Name Available' }}</h3>
+        
+            <!-- Rating Section -->
+            <div class="rating">
+              <span *ngFor="let star of stars; let index = index">
+                <i
+                  class="star"
+                  [class.filled]="index < (hoveredRating || selectedRating)"
+                  (mouseenter)="hoverRating(index + 1)"
+                  (mouseleave)="resetHoveredRating()"
+                  (click)="rateDoctor(index + 1)">
+                  &#9733;
+                </i>
+              </span>
+              <span class="score">{{ selectedRating }} / 5</span>
+            </div>
+        
+            <!-- Back Button -->
+            <button (click)="backToList()">Back to Doctor List</button>
+          </div>
+        </div>
+        
+  
+      
+       
+        <div *ngIf="activeSection === 'chat'">
+        <div *ngIf="activeDoctor" class="chat-container">
+          <h3>Chat with {{ activeDoctor }}</h3>
+          <div class="chat-box">
+            <!-- Iterate through the messages for the active doctor -->
+            <div *ngFor="let msg of conversations[activeDoctor]" class="chat-message">
+              <strong>{{ msg.sender }}:</strong> {{ msg.text }}
+            </div>
+            <input [(ngModel)]="newMessage" placeholder="Type a message..." />
+            <button (click)="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
         <div *ngIf="activeSection === 'send-ecg'" class="send-ecg-container">
           <h2>Send an ECG File</h2>
       
@@ -105,20 +189,22 @@
       <h3>{{ doctor.name }}</h3>
       <p>{{ doctor.specialty }}</p>
       <p>{{ doctor.practiceLocation }}</p>
+      <p *ngIf="doctor.rating !== null">Rating: {{ doctor.rating }}</p>
+  <p *ngIf="doctor.rating === null">No ratings yet</p>
     </div>
 
         
               <div class="doctor-actions">
                 <!-- Send ECG button -->
                 <div class="nav-link-1" (click)="onSendECG($event, i, doctor)">
-    Send ECG ({{ i }})
+    Send ECG 
   </div>
 
   <!-- Other actions -->
-  <div class="nav-link-1" >Chat ({{ i }})</div>
-  <div class="nav-link-1" >Rate ({{ i }})</div>
-  <div class="nav-link-1" >Report ({{ i }})</div>
-  <div class="nav-link-1" >Book ({{ i }})</div>
+  <div class="nav-link-1" (click)="onchat($event, i, doctor)">Chat</div>
+  <div class="nav-link-1" (click)="onrate($event, i, doctor)" >Rate </div>
+  <div class="nav-link-1"  (click)="onreport($event, i, doctor)">Report </div>
+  <div class="nav-link-1" (click)="onbook($event, i, doctor)" >Book </div>
 </div>
 
             </div>

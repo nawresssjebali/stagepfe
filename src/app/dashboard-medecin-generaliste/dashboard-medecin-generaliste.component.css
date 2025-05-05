@@ -601,6 +601,397 @@ input[type="file"]:hover {
   color: white;
   border-color: #911c2a;
 }
+/* Chat Container */
+.chat-container {
+  background: #fffefc;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(178, 34, 52, 0.15);
+  max-width: 600px;
+  margin: 0 auto;
+  height: 80vh;
+  overflow-y: auto;
+}
+
+.chat-container h3 {
+  font-size: 1.8rem;
+  color: #B22234;
+  margin-bottom: 20px;
+  font-weight: 700;
+  border-bottom: 3px solid #B22234;
+  padding-bottom: 10px;
+}
+
+/* Chat Box */
+.chat-box {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-height: 500px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.chat-message {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #444;
+}
+
+.chat-message strong {
+  color: #B22234;
+  font-weight: bold;
+}
+
+/* Message Input */
+.chat-box input {
+  padding: 12px;
+  border: 2px solid #f4c6c6;
+  border-radius: 10px;
+  width: calc(100% - 100px);
+  font-size: 1rem;
+  margin-right: 10px;
+  transition: border 0.3s ease;
+  color: #3d3d3d;
+}
+
+.chat-box input:focus {
+  outline: none;
+  border-color: #B22234;
+  box-shadow: 0 0 5px rgba(178, 34, 52, 0.3);
+}
+
+/* Send Button */
+.chat-box button {
+  background: linear-gradient(to right, #B22234, #911c2a);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin-top:15px;
+}
+
+.chat-box button:hover {
+  background: linear-gradient(to right, #911c2a, #B22234);
+}
+
+.chat-box button:active {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+/* Main container for the doctor info */
+
+
+/* Rating stars container */
+.rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+/* Individual star style */
+.star {
+  font-size: 28px;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+
+/* Highlighted star color when filled */
+.star.filled {
+  color: #ffcc00; /* Gold color for filled stars */
+}
+
+/* Display rating score below the stars */
+.rating span {
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Button style */
+button {
+  background-color: #007bff;
+  color: white;
+  font-size: 1.1rem;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  width: 100%;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+/* Button hover effect */
+button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Button focus effect */
+button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Styling for "Back to Doctor List" section */
+button:active {
+  transform: translateY(2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .doctor-info {
+    padding: 15px;
+  }
+
+  .doctor-image {
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  .rating {
+    gap: 3px;
+  }
+
+  button {
+    font-size: 1rem;
+  }
+}
+/* Report Doctor Section */
+.report-doctor {
+  background: #fffefc;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(178, 34, 52, 0.15);
+  max-width: 800px;
+  margin: 30px auto;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Report Doctor Header */
+.report-doctor h3 {
+  font-size: 1.8rem;
+  color: #B22234;
+  font-weight: 700;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #B22234;
+  padding-bottom: 10px;
+}
+
+/* Reason for Reporting Label */
+.report-doctor label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #B22234;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Reason for Reporting Textarea */
+.report-doctor textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #f4c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #3d3d3d;
+  transition: all 0.3s ease;
+  min-height: 120px;
+  margin: 10px 10px 20px 0; /* Ensuring no left/right margin, just bottom margin */
+  resize: vertical;
+}
+
+.report-doctor textarea:focus {
+  outline: none;
+  border-color: #B22234;
+  box-shadow: 0 0 5px rgba(178, 34, 52, 0.3);
+}
+
+/* Submit Button */
+.report-doctor button {
+  background: linear-gradient(to right, #B22234, #911c2a);
+  color: white;
+  padding: 14px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 6px 20px rgba(178, 34, 52, 0.25);
+  transition: all 0.3s ease;
+}
+
+.report-doctor button:hover {
+  background: linear-gradient(to right, #911c2a, #73151f);
+  transform: translateY(-2px);
+}
+
+.report-doctor button:disabled {
+  background: #f8d7da;
+  color: #999;
+  cursor: not-allowed;
+}
+/* Customizing the Snackbar appearance */
+.mat-snack-bar-container {
+  background-color: #4caf50; /* Green background */
+  color: white;              /* White text color */
+  border-radius: 5px;        /* Rounded corners */
+  font-family: 'Arial', sans-serif; /* Custom font */
+  font-size: 16px;           /* Font size */
+  padding: 12px 24px;        /* Padding around the Snackbar */
+}
+
+/* Optional: Customize the action button (if any) */
+.mat-snack-bar-action {
+  color: #ffeb3b; /* Yellow action button */
+}
+
+/* Optional: Customize Snackbar close button */
+.mat-snack-bar-close {
+  color: #ffffff; /* White close button */
+}
+/* FullCalendar Theming */
+/* =================== FullCalendar Custom Styles =================== */
+.fc {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #fffefc;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(178, 34, 52, 0.1);
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Toolbar Layout */
+.fc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+/* Calendar Title */
+.fc-toolbar-title {
+  font-size: 2rem;
+  font-family: 'Georgia', serif;
+  color: #B22234;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Buttons */
+.fc-button {
+  background: linear-gradient(to right, #B22234, #911c2a);
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(178, 34, 52, 0.25);
+  text-transform: capitalize;
+  transition: all 0.3s ease;
+}
+
+.fc-button:hover {
+  background: linear-gradient(to right, #911c2a, #73151f);
+  transform: translateY(-2px);
+}
+
+.fc-button:disabled {
+  background-color: #f8d7da;
+  color: #999;
+  box-shadow: none;
+}
+
+/* Day Numbers */
+.fc-daygrid-day-number {
+  color: #B22234;
+  font-weight: bold;
+}
+
+/* Today Highlight */
+.fc-day-today {
+  background: #fef1f3 !important;
+  border: 2px solid #B22234 !important;
+  box-shadow: inset 0 0 8px rgba(178, 34, 52, 0.2);
+}
+
+/* Date Hover Effect */
+.fc-daygrid-day:hover {
+  background-color: #fff5f6;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+/* Events Style */
+.fc-daygrid-event {
+  background: linear-gradient(to right, #B22234, #8B1C2F);
+  color: white;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Custom Snackbar Styling */
+/* Custom Snackbar Styling */
+::ng-deep .custom-snackbar {
+  background-color: #B22234; /* Red background matching your theme */
+  color: white; /* White text */
+  font-size: 16px; /* Larger font size for readability */
+  font-weight: bold; /* Bold text for impact */
+  border-radius: 10px; /* Rounded corners */
+  padding: 15px; /* More padding for a spacious look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+  transition: all 0.3s ease;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Optional: Style the "OK" button */
+::ng-deep .mat-simple-snackbar-action {
+  background-color: #f1f1f1;
+  color: #333;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 10px;
+  margin-left: 10px;
+}
+
+::ng-deep .mat-simple-snackbar-action:hover {
+  background-color: #dddddd; /* Hover effect */
+}
 
 
 /* Smooth fade-in animation */
