@@ -514,6 +514,11 @@ app.get('/events', async (req, res) => {
   const { userId } = req.query;
   try {
     const events = await Event.find({ userId });
+
+    // Log the events to the console for debugging
+    console.log('Fetched events from the database:', events);
+
+    // Send the events in the response
     res.status(200).json({ events });
   } catch (err) {
     console.error('Error fetching events:', err);
