@@ -12,9 +12,19 @@ import {ViewEncapsulation } from '@angular/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { FullCalendarModule } from '@fullcalendar/angular'; 
 import { DateSelectArg } from '@fullcalendar/core';
+import moment from 'moment-timezone';
+
+import { toZonedTime } from 'date-fns-tz';
 
 
 import { Subject } from 'rxjs';
+
+interface CalendarBookingEvent {
+  title: string;
+  date: Date;
+  roomId: string;
+}
+
 
 import {
   CalendarEvent,
@@ -63,6 +73,7 @@ export class DashboardMedecinGeneralisteComponent implements OnInit {
   activeDoctor: string = ''; // Active doctor name
   conversations: { [doctorName: string]: any[] } = {};
   isBrowser: boolean;
+  events: CalendarBookingEvent[] = [];
 
   calendarPlugins = [dayGridPlugin]; 
 
@@ -99,50 +110,69 @@ export class DashboardMedecinGeneralisteComponent implements OnInit {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
   ngOnInit(): void {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-  
-    if (this.isBrowser) {
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        this.user = JSON.parse(userData);
-        this.loadDoctorPhoto();
-  
-        const storedEvents = localStorage.getItem('calendarEvents');
-        if (storedEvents) {
-          this.calendarEvents = JSON.parse(storedEvents);
-          this.calendarOptions.events = this.calendarEvents;
-  
-          // 🔔 Check if there's an event today
-          this.checkTodayEvents(this.calendarEvents);
-        } else {
-          // Fetch from backend
-          this.http.get(`http://localhost:5000/events?userId=${this.user.id}`).subscribe({
-            next: (response: any) => {
-              this.calendarEvents = response.events;
-              this.calendarOptions.events = this.calendarEvents;
-              localStorage.setItem('calendarEvents', JSON.stringify(this.calendarEvents));
-  
-              // 🔔 Check if there's an event today
-              this.checkTodayEvents(this.calendarEvents);
-            },
-            error: (error) => {
-              console.error('Error fetching events:', error);
-            }
-          });
-        }
+  this.isBrowser = isPlatformBrowser(this.platformId);
+
+  if (this.isBrowser) {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.user = JSON.parse(userData);
+      this.loadDoctorPhoto();
+
+      const storedEvents = localStorage.getItem('calendarEvents');
+      if (storedEvents) {
+        this.calendarEvents = JSON.parse(storedEvents);
+        this.normalizeEvents(this.calendarEvents);  // Normalize events before assigning to calendarOptions
+
+        this.calendarOptions.events = this.calendarEvents;
+
+        // 🔔 Check if there's an event today
+        this.checkTodayEvents(this.calendarEvents);
+      } else {
+        // Fetch from backend
+        this.http.get(`http://localhost:5000/events?userId=${this.user.id}`).subscribe({
+          next: (response: any) => {
+            this.calendarEvents = response.events;
+            this.normalizeEvents(this.calendarEvents);  // Normalize events before assigning to calendarOptions
+
+            this.calendarOptions.events = this.calendarEvents;
+            localStorage.setItem('calendarEvents', JSON.stringify(this.calendarEvents));
+
+            // 🔔 Check if there's an event today
+            this.checkTodayEvents(this.calendarEvents);
+          },
+          error: (error) => {
+            console.error('Error fetching events:', error);
+          }
+        });
       }
-      
+    }
+
+    // Listen for logout in other tabs
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'user' && event.newValue === null) {
+        console.warn('Detected logout from another browser/tab. Redirecting...');
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+}
+
+normalizeEvents(events: any[]): void {
+  events.forEach(event => {
+    // Check if event has 'start' and 'end' or just 'date'
+    if (event.start && event.end) {
+      // If the event has a 'start' and 'end' date, use it
+      event.date = event.start;
+    } else if (!event.date) {
+      // If the event has neither 'date', 'start' nor 'end', mark it as an invalid event
+      event.date = null;
+    }
+  });
+}
+  
   
       // Listen for logout in other tabs
-      window.addEventListener('storage', (event) => {
-        if (event.key === 'user' && event.newValue === null) {
-          console.warn('Detected logout from another browser/tab. Redirecting...');
-          this.router.navigate(['/login']);
-        }
-      });
-    }
-  }
-  
+      
   
   loadDoctorPhoto(): void {
     if (!this.user?.photo) {
@@ -626,7 +656,7 @@ onSubmit(): void {
 view: CalendarView = CalendarView.Week;
 CalendarView = CalendarView;
 
-events: CalendarEvent[] = [];
+
 viewDate: Date = new Date();
 refresh = new Subject<void>();
 
@@ -669,52 +699,65 @@ onbook(event: any, i: number, doctor: any): void {
 
   // Initialize as an empty array of CalendarEvent
  
-
   handleDateSelect(selectInfo: DateSelectArg, doctorId: string): void {
-    // Prompt the user for the event title
     const title = prompt('Enter event title:');
     
     if (title) {
-      // Create the event data to send to the backend
-      const eventData = {
-        userId: this.user.id,  // User's ID from localStorage
-        date: selectInfo.startStr,  // The selected start date
-        doctorId: doctorId,  // The selected doctor's ID
-        title: title,  // The event title entered by the user
-      };
+      const time = prompt('Enter time for the event (HH:mm):');
+      
+      if (time) {
+        // Extract the date part and combine it with the entered time
+        const dateStr = selectInfo.startStr.split('T')[0];
+        const localDateTime = new Date(`${dateStr}T${time}:00`);
   
-      // Send the event data to the backend via HTTP POST
-      this.http.post('http://localhost:5000/events', eventData).subscribe({
-        next: (response: any) => {
-          // Log success
-          console.log('Event saved successfully:', response);
+        // Convert local time (Tunisia) to the Africa/Tunis time zone using moment-timezone
+        const timeZone = 'Africa/Tunis';
+        const zonedDate = moment(localDateTime).tz(timeZone, true).toDate(); // Convert to the correct timezone
   
-          // Add the new event to the calendar (local state)
-          const newEvent = {
-            title: title,
-            start: selectInfo.startStr,
-            end: selectInfo.endStr,
-            allDay: selectInfo.allDay,
-          };
-          
-          this.calendarEvents.push(newEvent);
+        // Extract the userId and doctorId
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const userId = user.id;
   
-          // Update localStorage with the new events array
-          localStorage.setItem('calendarEvents', JSON.stringify(this.calendarEvents));
-  
-          // Optionally, update the calendar view if required
-          // this.calendarOptions.events = [...this.calendarEvents];
-        },
-        error: (error) => {
-          // Log error if POST fails
-          console.error('Error saving event:', error);
+        if (!userId || !doctorId) {
+          console.error('Missing userId or doctorId!');
+          return;
         }
-      });
+  
+        // Prepare event data to send to the backend
+        const eventData = {
+          title,
+          date: zonedDate,  // Send date adjusted to Tunisia time zone
+          userId,
+          doctorId
+        };
+  
+        // Send event data to the backend
+        this.http.post('http://localhost:5000/events', eventData).subscribe({
+          next: (response: any) => {
+            console.log('Event saved successfully:', response);
+  
+            // Add the event to the calendar and store it in localStorage
+            this.calendarEvents.push({
+              title,
+              start: zonedDate.toISOString(),
+              end: new Date(zonedDate.getTime() + 60 * 60 * 1000).toISOString(), // +1 hour for the event duration
+              allDay: false
+            });
+  
+            localStorage.setItem('calendarEvents', JSON.stringify(this.calendarEvents));
+          },
+          error: (error) => {
+            console.error('Error saving event:', error);
+          }
+        });
+      }
     }
   }
+  
+  
   checkTodayEvents(events: any[]) {
-    const today = new Date().toLocaleDateString('en-CA');
-    console.log('📅 Today\'s date:', today);
+    const today = new Date();
+    const todayStr = today.toDateString(); // e.g., "Tue May 07 2025"
   
     const todaysEvents = events.filter(event => {
       if (!event.date) {
@@ -722,26 +765,77 @@ onbook(event: any, i: number, doctor: any): void {
         return false;
       }
   
-      try {
-        const eventDate = new Date(event.date).toLocaleDateString('en-CA');
-        console.log(`🔍 Checking event "${event.title}" with date: ${eventDate}`);
-        return eventDate === today;
-      } catch (err) {
-        console.error('❌ Error parsing date for event:', event, err);
-        return false;
-      }
+      const eventDateStr = event.date.toDateString(); // works since it's already a Date object
+      return eventDateStr === todayStr;
     });
   
     console.log('✅ Events matching today\'s date:', todaysEvents);
   
     if (todaysEvents.length > 0) {
       this.snackBar.open(`📅 You have ${todaysEvents.length} event(s) today!`, 'OK', {
-        duration: 10000, // 10 seconds
+        duration: 10000,
         verticalPosition: 'top',
-        panelClass: ['custom-snackbar'], // Add custom styling class
+        panelClass: ['custom-snackbar'],
       });
     } else {
       console.log('📭 No events for today.');
     }
   }
+  
+  
+ 
+ffetchEvents(): void {
+  const storedUser = localStorage.getItem('user');
+
+  if (!storedUser) {
+    console.error('❌ No user found in localStorage.');
+    return;
+  }
+
+  const user = JSON.parse(storedUser);
+  const userId = user.id;
+
+  console.log('🔍 Fetching events for userId:', userId);
+
+  this.http.get<CalendarBookingEvent[]>(`http://localhost:5000/events?userId=${userId}`).subscribe({
+    next: (response: CalendarBookingEvent[]) => {
+      console.log('✅ Fetched events:', response);
+
+      if (response && response.length > 0) {
+        this.events = response.map(event => ({
+          title: event.title,
+          date: new Date(event.date), // Keep as Date object
+          roomId: event.roomId ?? ''
+        }));
+        console.log('📅 Processed Events:', this.events);
+
+        // 👉 Check for today's events after mapping
+        this.checkTodayEvents(this.events);
+      } else {
+        console.log('ℹ️ No events found for this user.');
+      }
+    },
+    error: (err) => {
+      console.error('❌ Error fetching events:', err);
+    }
+  });
+}
+
+
+  joinCall(roomId: string, date: Date): void {
+    console.log(`Joining call in room ${roomId} scheduled for ${date}`);
+    // Your logic for joining a call here
+  }
+
+  canJoin(date: Date): boolean {
+    const now = new Date();
+    const canJoin = now.getTime() < date.getTime();  // Check if the event is in the future
+    console.log(`Can join: ${canJoin}, Event date: ${date}, Current time: ${now}`);
+    return canJoin;
+  }
+  onscheduled(): void {
+    this.activeSection = 'call'; // Switch to 'call' section
+    this.ffetchEvents(); // Fetch events when switching to the 'call' section
+  }
+  
 }

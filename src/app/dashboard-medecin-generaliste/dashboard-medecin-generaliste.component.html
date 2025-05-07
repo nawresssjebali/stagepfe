@@ -1,391 +1,420 @@
+<div class="dashboard">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <h3>🧑‍⚕️ Account</h3>
+    <div class="nav-link" (click)=" onLogout()">Logout</div>
+    <div class="nav-link" (click)="onShowProfileSettings()">Profile Settings</div>
 
-    <div class="dashboard">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <h2>Dashboard</h2>
-        <h3>🧑‍⚕️ Account</h3>
-        <div class="nav-link" (click)=" onLogout()">Logout</div>
-        <div class="nav-link" (click)="onShowProfileSettings()">Profile Settings</div>
-    
-        <div class="nav-link" (click)="onDeleteAccount()">Delete Account</div>
+    <div class="nav-link" (click)="onDeleteAccount()">Delete Account</div>
 
-        <h3>📤 ECG Actions</h3>
-        <div class="nav-link" (click)="onSendToDoctor()">Send to Doctor</div>
+    <h3>📤 ECG Actions</h3>
+    <div class="nav-link" (click)="onSendToDoctor()">Send to Doctor</div>
 
-        <div class="nav-link">Send to All Cardiologists</div>
-        <div class="nav-link">Modify & Save Draft</div>
-        <div class="nav-link">AI ECG Interpretation</div>
-        <h3>📅 Consultations</h3>
-        <div class="nav-link" (click)="scheduled events()">scheduled events</div>
-        <h3>📂 Records</h3>
-        <div class="nav-link">Manage Drafts</div>
-        <div class="nav-link">Answered Queries</div>
-        <h3>🔧 Support</h3>
-        <div class="nav-link">FAQ</div>
-        <div class="nav-link">Report Security Issues</div>
-      </div>
-  
-      <!-- Doctor Photo (top-right corner of the dashboard) -->
-      <div *ngIf="doctorPhotoUrl; else photoError" class="photo-corner">
-        <img [src]="doctorPhotoUrl" alt="Doctor's Photo" id="doctor-photo" />
-      </div>
-  
-      <ng-template #photoError>
-        <p>Photo not found or failed to load. Please check the console for errors.</p>
-      </ng-template>
-  
-      <!-- Main content -->
-      <div class="dashboard-wrapper">
-        <div *ngIf="activeSection === 'calendar-wrapper'" class="calendar-wrapper">
-          <full-calendar [options]="calendarOptions"></full-calendar>
-
-
-        
-        
-
-
-
-          </div>
-          
-        
-        
-        
-        
-                
-        
-        
-
-        
-        
-        <div *ngIf="activeSection === 'report-doctor'" class="report-doctor">
-          <h3>Report Doctor</h3>
-          <form (ngSubmit)="onSubmit()">
-            <label for="reason">Reason for Reporting</label>
-            <textarea id="reason" [(ngModel)]="reason" name="reason" required></textarea>
-          
-            <button type="submit" [disabled]="!reason">Report</button>
-          </form>
-        </div>
-        
-
-        
-        <!-- Only show when activeSection is 'rate' -->
-        <div *ngIf="activeSection === 'rate'">
-          <div class="doctor-info">
-        
-            <!-- Doctor Image -->
-            <img 
-              [src]="'http://localhost:5000' + getSelectedDoctor()?.photo" 
-              alt="Doctor Image" 
-              class="doctor-image" 
-              *ngIf="getSelectedDoctor()?.photo" 
-            />
-            
-            <!-- Doctor Name -->
-            <h3>Rate Doctor: {{ getSelectedDoctor()?.name || 'No Name Available' }}</h3>
-        
-            <!-- Rating Section -->
-            <div class="rating">
-              <span *ngFor="let star of stars; let index = index">
-                <i
-                  class="star"
-                  [class.filled]="index < (hoveredRating || selectedRating)"
-                  (mouseenter)="hoverRating(index + 1)"
-                  (mouseleave)="resetHoveredRating()"
-                  (click)="rateDoctor(index + 1)">
-                  &#9733;
-                </i>
-              </span>
-              <span class="score">{{ selectedRating }} / 5</span>
-            </div>
-        
-            <!-- Back Button -->
-            <button (click)="backToList()">Back to Doctor List</button>
-          </div>
-        </div>
-        
-  
-      
-       
-        <div *ngIf="activeSection === 'chat'">
-        <div *ngIf="activeDoctor" class="chat-container">
-          <h3>Chat with {{ activeDoctor }}</h3>
-          <div class="chat-box">
-            <!-- Iterate through the messages for the active doctor -->
-            <div *ngFor="let msg of conversations[activeDoctor]" class="chat-message">
-              <strong>{{ msg.sender }}:</strong> {{ msg.text }}
-            </div>
-            <input [(ngModel)]="newMessage" placeholder="Type a message..." />
-            <button (click)="sendMessage()">Send</button>
-          </div>
-        </div>
-      </div>
-        <div *ngIf="activeSection === 'send-ecg'" class="send-ecg-container">
-          <h2>Send an ECG File</h2>
-      
-          <!-- File input -->
-          <input type="file" (change)="onECGFileSelected($event)" />
-      
-          <!-- Upload status message -->
-          <p *ngIf="ecgUploadMessage">{{ ecgUploadMessage }}</p>
-      
-          <!-- Selected file name -->
-          <div *ngIf="selectedECGFile" class="file-info">
-            Selected file: {{ selectedECGFile.name }}
-          </div>
-      
-          <!-- Emergency Level Buttons -->
-          <div class="emergency-buttons">
-            <label class="emergency-label">Emergency Level:</label>
-            <div class="btn-group">
-              <button class="emergency-btn"
-                      [class.selected]="emergencyLevel === 'normal'"
-                      (click)="emergencyLevel = 'normal'">
-                Normal
-              </button>
-              <button class="emergency-btn"
-                      [class.selected]="emergencyLevel === 'urgent'"
-                      (click)="emergencyLevel = 'urgent'">
-                Urgent
-              </button>
-              <button class="emergency-btn"
-                      [class.selected]="emergencyLevel === 'critical'"
-                      (click)="emergencyLevel = 'critical'">
-                Critical
-              </button>
-            </div>
-          </div>
-      
-          <!-- Upload button -->
-          <button class="nav-link-1" (click)="uploadECGFile()">Upload ECG</button>
-      
-          <!-- Success/Error Message -->
-          <div *ngIf="ecgUploadMessage" class="upload-message">
-            {{ ecgUploadMessage }}
-          </div>
-        </div>
-      
-        <div class="doctors-container" *ngIf="activeSection === 'send-to-doctor'">
-        
-          <div 
-          *ngFor="let doctor of generalDoctors; let i = index"
-          class="doctor-card"
-          [class.selected]="getDoctorId(doctor) === selectedDoctorId"
-          (click)="onSelectDoctor(doctor)">
-          
- 
-      
-      
-     
-
-     
-     
-
-    <!-- Doctor Image -->
-    <img [src]="'http://localhost:5000' + doctor.photo" alt="Doctor Image" class="doctor-image" />
-
-    <!-- Doctor Info -->
-    <div class="doctor-info">
-      <h3>{{ doctor.name }}</h3>
-      <p>{{ doctor.specialty }}</p>
-      <p>{{ doctor.practiceLocation }}</p>
-      <p *ngIf="doctor.rating !== null">Rating: {{ doctor.rating }}</p>
-  <p *ngIf="doctor.rating === null">No ratings yet</p>
-    </div>
-
-        
-              <div class="doctor-actions">
-                <!-- Send ECG button -->
-                <div class="nav-link-1" (click)="onSendECG($event, i, doctor)">
-    Send ECG 
+    <div class="nav-link">Send to All Cardiologists</div>
+    <div class="nav-link">Modify & Save Draft</div>
+    <div class="nav-link">AI ECG Interpretation</div>
+    <h3>📅 Consultations</h3>
+    <div class="nav-link" (click)="onscheduled()">scheduled events</div>
+    <h3>📂 Records</h3>
+    <div class="nav-link">Manage Drafts</div>
+    <div class="nav-link">Answered Queries</div>
+    <h3>🔧 Support</h3>
+    <div class="nav-link">FAQ</div>
+    <div class="nav-link">Report Security Issues</div>
   </div>
 
-  <!-- Other actions -->
-  <div class="nav-link-1" (click)="onchat($event, i, doctor)">Chat</div>
-  <div class="nav-link-1" (click)="onrate($event, i, doctor)" >Rate </div>
-  <div class="nav-link-1"  (click)="onreport($event, i, doctor)">Report </div>
-  <div class="nav-link-1" (click)="onbook($event, i, doctor)" >Book </div>
-</div>
+  <!-- Doctor Photo (top-right corner of the dashboard) -->
+  <div *ngIf="doctorPhotoUrl; else photoError" class="photo-corner">
+    <img [src]="doctorPhotoUrl" alt="Doctor's Photo" id="doctor-photo" />
+  </div>
 
-            </div>
-          </div>
-        
-        
-        
+  <ng-template #photoError>
+    <p>Photo not found or failed to load. Please check the console for errors.</p>
+  </ng-template>
 
-        <div class="delete-card" *ngIf="activeSection === 'delete'">
+  <!-- Main content -->
+  <div class="dashboard-wrapper">
+  
+    <div class="events-container" *ngIf="activeSection === 'call'">
+      <h2>📅 My Scheduled Calls</h2>
+    
+      <div *ngIf="events.length === 0">
+        <p>No scheduled calls yet.</p>
+      </div>
+    
+      <!-- Cards container -->
+      <div class="event-list">
+        <div *ngFor="let event of events" class="event-card">
+          <h3>{{ event.title }}</h3>
+          <p><strong>Date:</strong> {{ event.date | date: 'yyyy-MM-dd' }}</p>
+          <p><strong>Time:</strong> {{ event.date | date: 'shortTime' }}</p>
+    
+          <button
+            (click)="joinCall(event.roomId, event.date)"
+            [disabled]="!canJoin(event.date)">
+            🎥 Join Video Call
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    
+      <!-- Add a debug section to view the raw events array -->
+      
+   
+    
+  
+    
+    <div *ngIf="activeSection === 'calendar-wrapper'" class="calendar-wrapper">
+      <full-calendar [options]="calendarOptions"></full-calendar>
 
-            <div class="card-content">
-              <p>Are you sure you want to delete your account?</p>
-              <div class="buttons">
-                <button (click)="confirmDelete()">Yes</button>
-                <button (click)="activeSection = 'oath'">No</button> <!-- back to Oath -->
-                
-                
-              </div>
-            </div>
-          </div>
-          <div *ngIf="isLoading" class="loading-indicator">
-            <div class="spinner"></div>
-            <p>Processing your request...</p>
-          </div>
-          
-          <!-- Goodbye Message -->
-          <div class="goodbye-message"*ngIf="activeSection === 'goodbye'">
-            <p>We were happy to have you among us and hope to see you again. ❤️</p>
-          </div>
-        <div class="main-content" *ngIf="activeSection === 'profile-settings'">
-          <div class="nounou"> 
-            <div class="container">
-                
-              <header>Update Practitioner Info</header>
-              <form #userForm="ngForm" (ngSubmit)="submitForm(userForm)" novalidate>
-                  <div class="form first">
-                      <div class="details personal">
-                          <span class="title">Personal Details</span>
-                          <div class="fields">
+
+    
+    
+
+
+
+      </div>
       
-                              <!-- Full Name -->
-                              <div class="input-field">
-                                  <label>Full Name</label>
-                                  <input type="text" placeholder="Enter your name" required 
-                                      [(ngModel)]="user.name" name="name" #name="ngModel">
-                                  <div *ngIf="name.invalid && name.touched" class="error">Name is required</div>
-                              </div>
+    
+    
+    
+    
+            
+    
+    
+
+    
+    
+    <div *ngIf="activeSection === 'report-doctor'" class="report-doctor">
+      <h3>Report Doctor</h3>
+      <form (ngSubmit)="onSubmit()">
+        <label for="reason">Reason for Reporting</label>
+        <textarea id="reason" [(ngModel)]="reason" name="reason" required></textarea>
       
-                              <!-- Address -->
-                              <div class="input-field">
-                                  <label>Address</label>
-                                  <input type="text" placeholder="Enter your address" required 
-                                      [(ngModel)]="user.address" name="address" #address="ngModel">
-                                  <div *ngIf="address.invalid && address.touched" class="error">Address is required</div>
-                              </div>
-      
-                              <!-- Email -->
-                              <div class="input-field">
-                                  <label>Email</label>
-                                  <input type="email" placeholder="Enter your email" required 
-                                      [(ngModel)]="user.email" name="email" #email="ngModel">
-                                  <div *ngIf="email.invalid && email.touched" class="error">Enter a valid email</div>
-                              </div>
-      
-                              <!-- Mobile Number -->
-                              <div class="input-field">
-                                  <label>Mobile Number</label>
-                                  <input type="text" placeholder="Enter mobile number" required 
-                                      [(ngModel)]="user.mobile" name="mobile" #mobile="ngModel"
-                                      pattern="^[0-9]{8,15}$">
-                                  <div *ngIf="mobile.invalid && mobile.touched" class="error">Enter a valid phone number</div>
-                              </div>
-      
-                              <!-- Specialty -->
-                              <div class="input-field">
-                                  <label>Specialty</label>
-                                  <select required [(ngModel)]="user.specialty" name="specialty" #specialty="ngModel">
-                                      <option disabled selected>Select specialty</option>
-                                      <option value="generaliste">Médecin Généraliste</option>
-                                      <option value="cardiologie">Expert en Cardiologie</option>
-                                  </select>
-                                  <div *ngIf="specialty.invalid && specialty.touched" class="error">Select a specialty</div>
-                              </div>
-      
-                              <!-- Place of Practice -->
-                              <div class="input-field">
-                                  <label>Place of Practice</label>
-                                  <input type="text" placeholder="Enter your practice location" required 
-                                      [(ngModel)]="user.practiceLocation" name="practiceLocation" #practiceLocation="ngModel">
-                                  <div *ngIf="practiceLocation.invalid && practiceLocation.touched" class="error">
-                                      Enter your practice location
-                                  </div>
-                              </div>
-      
-                              <!-- Password -->
-                              <div class="input-field">
-                                  <label>Password</label>
-                                  <input type="password" placeholder="Enter your password" required 
-                                      [(ngModel)]="user.password" name="password" #password="ngModel"
-                                      minlength="6">
-                                  <div *ngIf="password.invalid && password.touched" class="error">
-                                      Password must be at least 6 characters
-                                  </div>
-                              </div>
-      
-                              <!-- Upload Photo -->
-                              <div class="input-field">
-                                  <label>Upload Photo</label>
-                                  <input type="file" accept="image/*" (change)="onFileChange($event)" name="photo">
-                                  <div *ngIf="!user.photo && userForm.touched" class="error">Photo is required</div>
-      
-                                  <!-- Image Preview -->
-                                  <div *ngIf="imagePreview">
-                                      <img [src]="imagePreview" alt="Image Preview" style="max-width: 200px; max-height: 200px;">
-                                  </div>
-                              </div>
-      
-                          </div>
-                      </div>
-      
-                      <!-- Submit Button -->
-                      <button class="nextBtn" type="submit" [disabled]="userForm.invalid || !user.photo || isLoading">
-                          <span class="btnText">submit</span>
-                          <i class="uil uil-navigator"></i>
-                      </button>
-                  </div>
-              </form>
-      
-             
-              <div *ngIf="responseMessage" class="response-message">
-                  {{ responseMessage }}
-              </div>
-      
-              
-              <div *ngIf="isLoading" class="loading-indicator">
-                <div class="spinner"></div>
-                <p>Submitting...</p>
-              </div>
-          </div>
-          </div>
-          
-          </div>
-          <div *ngIf="activeSection === 'oath'" class="hippocratic-oath">
-            <h2>🩺 Modern Hippocratic Oath</h2>
-            <p>
-              I swear to fulfill, to the best of my ability and judgment, this covenant:
-              <br><br>
-              I will respect the hard-won scientific gains of those physicians in whose steps I walk,
-              and gladly share such knowledge as is mine with those who are to follow.
-              <br><br>
-              I will apply, for the benefit of the sick, all measures [that] are required,
-              avoiding those twin traps of overtreatment and therapeutic nihilism.
-              <br><br>
-              I will remember that there is art to medicine as well as science,
-              and that warmth, sympathy, and understanding may outweigh the surgeon's knife or the chemist’s drug.
-              <br><br>
-              I will not be ashamed to say "I know not," nor will I fail to call in my colleagues
-              when the skills of another are needed for a patient’s recovery.
-              <br><br>
-              I will respect the privacy of my patients, for their problems are not disclosed to me that the world may know.
-              <br><br>
-              Most especially must I tread with care in matters of life and death. If it is given me to save a life, all thanks.
-              But it may also be within my power to take a life; this awesome responsibility must be faced with great humbleness
-              and awareness of my own frailty.
-              <br><br>
-              I will remember that I do not treat a fever chart, a cancerous growth, but a sick human being,
-              whose illness may affect the person’s family and economic stability. My responsibility includes these related problems,
-              if I am to care adequately for the sick.
-              <br><br>
-              I will prevent disease whenever I can, for prevention is preferable to cure.
-              <br><br>
-              I will remember that I remain a member of society, with special obligations to all my fellow human beings,
-              those sound of mind and body as well as the infirm.
-              <br><br>
-              If I do not violate this oath, may I enjoy life and art, respected while I live and remembered with affection thereafter.
-              <br><br>
-              May I always act so as to preserve the finest traditions of my calling and may I long experience the joy
-              of healing those who seek my help.
-            </p>
-          </div>
+        <button type="submit" [disabled]="!reason">Report</button>
+      </form>
+    </div>
+    
+
+    
+    <!-- Only show when activeSection is 'rate' -->
+    <div *ngIf="activeSection === 'rate'">
+      <div class="doctor-info">
+    
+        <!-- Doctor Image -->
+        <img 
+          [src]="'http://localhost:5000' + getSelectedDoctor()?.photo" 
+          alt="Doctor Image" 
+          class="doctor-image" 
+          *ngIf="getSelectedDoctor()?.photo" 
+        />
         
+        <!-- Doctor Name -->
+        <h3>Rate Doctor: {{ getSelectedDoctor()?.name || 'No Name Available' }}</h3>
+    
+        <!-- Rating Section -->
+        <div class="rating">
+          <span *ngFor="let star of stars; let index = index">
+            <i
+              class="star"
+              [class.filled]="index < (hoveredRating || selectedRating)"
+              (mouseenter)="hoverRating(index + 1)"
+              (mouseleave)="resetHoveredRating()"
+              (click)="rateDoctor(index + 1)">
+              &#9733;
+            </i>
+          </span>
+          <span class="score">{{ selectedRating }} / 5</span>
+        </div>
+    
+        <!-- Back Button -->
+        <button (click)="backToList()">Back to Doctor List</button>
+      </div>
+    </div>
+    
+
+  
+   
+    <div *ngIf="activeSection === 'chat'">
+    <div *ngIf="activeDoctor" class="chat-container">
+      <h3>Chat with {{ activeDoctor }}</h3>
+      <div class="chat-box">
+        <!-- Iterate through the messages for the active doctor -->
+        <div *ngFor="let msg of conversations[activeDoctor]" class="chat-message">
+          <strong>{{ msg.sender }}:</strong> {{ msg.text }}
+        </div>
+        <input [(ngModel)]="newMessage" placeholder="Type a message..." />
+        <button (click)="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+    <div *ngIf="activeSection === 'send-ecg'" class="send-ecg-container">
+      <h2>Send an ECG File</h2>
+  
+      <!-- File input -->
+      <input type="file" (change)="onECGFileSelected($event)" />
+  
+      <!-- Upload status message -->
+      <p *ngIf="ecgUploadMessage">{{ ecgUploadMessage }}</p>
+  
+      <!-- Selected file name -->
+      <div *ngIf="selectedECGFile" class="file-info">
+        Selected file: {{ selectedECGFile.name }}
+      </div>
+  
+      <!-- Emergency Level Buttons -->
+      <div class="emergency-buttons">
+        <label class="emergency-label">Emergency Level:</label>
+        <div class="btn-group">
+          <button class="emergency-btn"
+                  [class.selected]="emergencyLevel === 'normal'"
+                  (click)="emergencyLevel = 'normal'">
+            Normal
+          </button>
+          <button class="emergency-btn"
+                  [class.selected]="emergencyLevel === 'urgent'"
+                  (click)="emergencyLevel = 'urgent'">
+            Urgent
+          </button>
+          <button class="emergency-btn"
+                  [class.selected]="emergencyLevel === 'critical'"
+                  (click)="emergencyLevel = 'critical'">
+            Critical
+          </button>
+        </div>
+      </div>
+  
+      <!-- Upload button -->
+      <button class="nav-link-1" (click)="uploadECGFile()">Upload ECG</button>
+  
+      <!-- Success/Error Message -->
+      <div *ngIf="ecgUploadMessage" class="upload-message">
+        {{ ecgUploadMessage }}
       </div>
     </div>
   
+    <div class="doctors-container" *ngIf="activeSection === 'send-to-doctor'">
+    
+      <div 
+      *ngFor="let doctor of generalDoctors; let i = index"
+      class="doctor-card"
+      [class.selected]="getDoctorId(doctor) === selectedDoctorId"
+      (click)="onSelectDoctor(doctor)">
+      
+
+  
+  
+ 
+
+ 
+ 
+
+<!-- Doctor Image -->
+<img [src]="'http://localhost:5000' + doctor.photo" alt="Doctor Image" class="doctor-image" />
+
+<!-- Doctor Info -->
+<div class="doctor-info">
+  <h3>{{ doctor.name }}</h3>
+  <p>{{ doctor.specialty }}</p>
+  <p>{{ doctor.practiceLocation }}</p>
+  <p *ngIf="doctor.rating !== null">Rating: {{ doctor.rating }}</p>
+<p *ngIf="doctor.rating === null">No ratings yet</p>
+</div>
+
+    
+          <div class="doctor-actions">
+            <!-- Send ECG button -->
+            <div class="nav-link-1" (click)="onSendECG($event, i, doctor)">
+Send ECG 
+</div>
+
+<!-- Other actions -->
+<div class="nav-link-1" (click)="onchat($event, i, doctor)">Chat</div>
+<div class="nav-link-1" (click)="onrate($event, i, doctor)" >Rate </div>
+<div class="nav-link-1"  (click)="onreport($event, i, doctor)">Report </div>
+<div class="nav-link-1" (click)="onbook($event, i, doctor)" >Book </div>
+</div>
+
+        </div>
+      </div>
+    
+    
+    
+
+    <div class="delete-card" *ngIf="activeSection === 'delete'">
+
+        <div class="card-content">
+          <p>Are you sure you want to delete your account?</p>
+          <div class="buttons">
+            <button (click)="confirmDelete()">Yes</button>
+            <button (click)="activeSection = 'oath'">No</button> <!-- back to Oath -->
+            
+            
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isLoading" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Processing your request...</p>
+      </div>
+      
+      <!-- Goodbye Message -->
+      <div class="goodbye-message"*ngIf="activeSection === 'goodbye'">
+        <p>We were happy to have you among us and hope to see you again. ❤️</p>
+      </div>
+    <div class="main-content" *ngIf="activeSection === 'profile-settings'">
+      <div class="nounou"> 
+        <div class="container">
+            
+          <header>Update Practitioner Info</header>
+          <form #userForm="ngForm" (ngSubmit)="submitForm(userForm)" novalidate>
+              <div class="form first">
+                  <div class="details personal">
+                      <span class="title">Personal Details</span>
+                      <div class="fields">
+  
+                          <!-- Full Name -->
+                          <div class="input-field">
+                              <label>Full Name</label>
+                              <input type="text" placeholder="Enter your name" required 
+                                  [(ngModel)]="user.name" name="name" #name="ngModel">
+                              <div *ngIf="name.invalid && name.touched" class="error">Name is required</div>
+                          </div>
+  
+                          <!-- Address -->
+                          <div class="input-field">
+                              <label>Address</label>
+                              <input type="text" placeholder="Enter your address" required 
+                                  [(ngModel)]="user.address" name="address" #address="ngModel">
+                              <div *ngIf="address.invalid && address.touched" class="error">Address is required</div>
+                          </div>
+  
+                          <!-- Email -->
+                          <div class="input-field">
+                              <label>Email</label>
+                              <input type="email" placeholder="Enter your email" required 
+                                  [(ngModel)]="user.email" name="email" #email="ngModel">
+                              <div *ngIf="email.invalid && email.touched" class="error">Enter a valid email</div>
+                          </div>
+  
+                          <!-- Mobile Number -->
+                          <div class="input-field">
+                              <label>Mobile Number</label>
+                              <input type="text" placeholder="Enter mobile number" required 
+                                  [(ngModel)]="user.mobile" name="mobile" #mobile="ngModel"
+                                  pattern="^[0-9]{8,15}$">
+                              <div *ngIf="mobile.invalid && mobile.touched" class="error">Enter a valid phone number</div>
+                          </div>
+  
+                          <!-- Specialty -->
+                          <div class="input-field">
+                              <label>Specialty</label>
+                              <select required [(ngModel)]="user.specialty" name="specialty" #specialty="ngModel">
+                                  <option disabled selected>Select specialty</option>
+                                  <option value="generaliste">Médecin Généraliste</option>
+                                  <option value="cardiologie">Expert en Cardiologie</option>
+                              </select>
+                              <div *ngIf="specialty.invalid && specialty.touched" class="error">Select a specialty</div>
+                          </div>
+  
+                          <!-- Place of Practice -->
+                          <div class="input-field">
+                              <label>Place of Practice</label>
+                              <input type="text" placeholder="Enter your practice location" required 
+                                  [(ngModel)]="user.practiceLocation" name="practiceLocation" #practiceLocation="ngModel">
+                              <div *ngIf="practiceLocation.invalid && practiceLocation.touched" class="error">
+                                  Enter your practice location
+                              </div>
+                          </div>
+  
+                          <!-- Password -->
+                          <div class="input-field">
+                              <label>Password</label>
+                              <input type="password" placeholder="Enter your password" required 
+                                  [(ngModel)]="user.password" name="password" #password="ngModel"
+                                  minlength="6">
+                              <div *ngIf="password.invalid && password.touched" class="error">
+                                  Password must be at least 6 characters
+                              </div>
+                          </div>
+  
+                          <!-- Upload Photo -->
+                          <div class="input-field">
+                              <label>Upload Photo</label>
+                              <input type="file" accept="image/*" (change)="onFileChange($event)" name="photo">
+                              <div *ngIf="!user.photo && userForm.touched" class="error">Photo is required</div>
+  
+                              <!-- Image Preview -->
+                              <div *ngIf="imagePreview">
+                                  <img [src]="imagePreview" alt="Image Preview" style="max-width: 200px; max-height: 200px;">
+                              </div>
+                          </div>
+  
+                      </div>
+                  </div>
+  
+                  <!-- Submit Button -->
+                  <button class="nextBtn" type="submit" [disabled]="userForm.invalid || !user.photo || isLoading">
+                      <span class="btnText">submit</span>
+                      <i class="uil uil-navigator"></i>
+                  </button>
+              </div>
+          </form>
+  
+         
+          <div *ngIf="responseMessage" class="response-message">
+              {{ responseMessage }}
+          </div>
+  
+          
+          <div *ngIf="isLoading" class="loading-indicator">
+            <div class="spinner"></div>
+            <p>Submitting...</p>
+          </div>
+      </div>
+      </div>
+      
+      </div>
+      <div *ngIf="activeSection === 'oath'" class="hippocratic-oath">
+        <h2>🩺 Modern Hippocratic Oath</h2>
+        <p>
+          I swear to fulfill, to the best of my ability and judgment, this covenant:
+          <br><br>
+          I will respect the hard-won scientific gains of those physicians in whose steps I walk,
+          and gladly share such knowledge as is mine with those who are to follow.
+          <br><br>
+          I will apply, for the benefit of the sick, all measures [that] are required,
+          avoiding those twin traps of overtreatment and therapeutic nihilism.
+          <br><br>
+          I will remember that there is art to medicine as well as science,
+          and that warmth, sympathy, and understanding may outweigh the surgeon's knife or the chemist’s drug.
+          <br><br>
+          I will not be ashamed to say "I know not," nor will I fail to call in my colleagues
+          when the skills of another are needed for a patient’s recovery.
+          <br><br>
+          I will respect the privacy of my patients, for their problems are not disclosed to me that the world may know.
+          <br><br>
+          Most especially must I tread with care in matters of life and death. If it is given me to save a life, all thanks.
+          But it may also be within my power to take a life; this awesome responsibility must be faced with great humbleness
+          and awareness of my own frailty.
+          <br><br>
+          I will remember that I do not treat a fever chart, a cancerous growth, but a sick human being,
+          whose illness may affect the person’s family and economic stability. My responsibility includes these related problems,
+          if I am to care adequately for the sick.
+          <br><br>
+          I will prevent disease whenever I can, for prevention is preferable to cure.
+          <br><br>
+          I will remember that I remain a member of society, with special obligations to all my fellow human beings,
+          those sound of mind and body as well as the infirm.
+          <br><br>
+          If I do not violate this oath, may I enjoy life and art, respected while I live and remembered with affection thereafter.
+          <br><br>
+          May I always act so as to preserve the finest traditions of my calling and may I long experience the joy
+          of healing those who seek my help.
+        </p>
+      </div>
+    
+  </div>
+</div>

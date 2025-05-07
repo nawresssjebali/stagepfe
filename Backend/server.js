@@ -485,46 +485,64 @@ const eventSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   doctorId: { type: String, required: true },
   title: { type: String, required: true },
-  date: { type: String, required: true },
+  date: { type: Date, required: true },
+  roomId: { type: String, required: true }  // <- still required
 });
 
-const Event = mongoose.model('events', eventSchema);
-// Route to create/save a calendar event
+
+const Event = mongoose.model("events", eventSchema);
+const { v4: uuidv4 } = require('uuid');
+
 app.post('/events', async (req, res) => {
   try {
     const { userId, doctorId, title, date } = req.body;
+
+    if (!userId || !doctorId || !title || !date) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const roomId = uuidv4(); // ✅ Generate roomId
 
     const newEvent = new Event({
       userId,
       doctorId,
       title,
-      date,
+      date: new Date(date),
+      roomId // ✅ Now provided
     });
 
     await newEvent.save();
-    console.log('Event saved:', newEvent);
+    console.log('✅ Event saved:', newEvent);
+
     res.status(201).json({ message: 'Event saved successfully', event: newEvent });
+
   } catch (err) {
-    console.error('Error saving event:', err);
+    console.error('❌ Error saving event:', err);
     res.status(500).json({ error: 'Failed to save event' });
   }
 });
-// Route to fetch events for a specific user
+
+// Route to create/save a calendar event
 app.get('/events', async (req, res) => {
   const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
   try {
     const events = await Event.find({ userId });
 
-    // Log the events to the console for debugging
     console.log('Fetched events from the database:', events);
 
-    // Send the events in the response
-    res.status(200).json({ events });
+    res.status(200).json(events);
   } catch (err) {
     console.error('Error fetching events:', err);
     res.status(500).json({ error: 'Failed to fetch events' });
   }
 });
+
+
 const cron = require("node-cron");
 
 
