@@ -822,20 +822,76 @@ ffetchEvents(): void {
 }
 
 
-  joinCall(roomId: string, date: Date): void {
-    console.log(`Joining call in room ${roomId} scheduled for ${date}`);
-    // Your logic for joining a call here
-  }
+canJoin(eventDateString: string): boolean {
+  const now = new Date();
+  const eventTime = new Date(eventDateString); // Convert the string back to a Date object
+  const timeDiff = eventTime.getTime() - now.getTime();
+  return timeDiff <= 5 * 60 * 1000; // Allow join if within 5 minutes before the event starts
+}
 
-  canJoin(date: Date): boolean {
-    const now = new Date();
-    const canJoin = now.getTime() < date.getTime();  // Check if the event is in the future
-    console.log(`Can join: ${canJoin}, Event date: ${date}, Current time: ${now}`);
-    return canJoin;
-  }
+joinCall(roomId: string, eventDateString: string): void {
+  const jitsiUrl = `https://meet.jit.si/${roomId}`;
+  window.open(jitsiUrl, '_blank');
+}
+
   onscheduled(): void {
     this.activeSection = 'call'; // Switch to 'call' section
     this.ffetchEvents(); // Fetch events when switching to the 'call' section
   }
+ onSendToAllDoctor(){
+  this.activeSection="alldoctors"
+ }
+ uploadECGFile_1(): void {
+  console.log('Emergency Level:', this.emergencyLevel);
+
+  if (!this.emergencyLevel) {
+    this.ecgUploadMessage = 'Please select an emergency level before uploading!';
+    return;
+  }
+
+  if (!this.selectedECGFile) {
+    this.ecgUploadMessage = 'Please select a file first!';
+    return;
+  }
+
+  const user = localStorage.getItem('user');
+  const senderId = user ? JSON.parse(user).id : null;
+
+  if (!senderId) {
+    this.ecgUploadMessage = 'Sender ID is missing!';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', this.selectedECGFile);
+  formData.append('emergencyLevel', this.emergencyLevel);
+
+  this.ecgUploadMessage = 'Uploading ECG...';
+
+  this.http.post('http://localhost:5000/upload-ecg-to-all-docctors', formData, {
+    headers: {
+      'senderId': senderId
+    }
+  }).subscribe({
+    next: (response: any) => {
+      console.log('✅ ECG file uploaded successfully', response);
+      this.ecgUploadMessage = 'ECG uploaded successfully!';
+      this.selectedECGFile = null;
+      this.emergencyLevel = '';
+    },
+    error: (error) => {
+      console.error('❌ Error uploading ECG file:', error);
+      if (error.status === 400) {
+        this.ecgUploadMessage = 'Bad request: Please check the file and IDs.';
+      } else if (error.status === 500) {
+        this.ecgUploadMessage = 'Server error: Failed to upload ECG.';
+      } else {
+        this.ecgUploadMessage = 'Unexpected error occurred.';
+      }
+    }
+  });
+}
+
+
   
 }

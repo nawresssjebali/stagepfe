@@ -544,6 +544,76 @@ app.get('/events', async (req, res) => {
 
 
 const cron = require("node-cron");
+// ✅ New Schema (no receiverId)
+const broadcastECGSchema = new mongoose.Schema({
+  senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
+  filePath: { type: String, required: true },
+  emergencyLevel: {
+    type: String,
+    enum: ['normal', 'urgent', 'critical'],
+    required: true
+  },
+  uploadDate: { type: Date, default: Date.now }
+});
+
+// ✅ New model and MongoDB collection name
+const BroadcastECG = mongoose.model("broadcastEcgUploads", broadcastECGSchema);
+
+// ✅ Optional: new folder for separation
+const broadcastECGUploadDir = "C:/Users/jebali nawress/stagepfe-main/Backend/Broadcast_ECGS";
+
+if (!fs.existsSync(broadcastECGUploadDir)) {
+  fs.mkdirSync(broadcastECGUploadDir, { recursive: true });
+  console.log("✅ Broadcast ECG folder created at:", broadcastECGUploadDir);
+}
+
+const broadcastECGStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, broadcastECGUploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = 'broadcast-ecg-' + Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+
+const broadcastUpload = multer({ storage: broadcastECGStorage });
+
+// ✅ NEW endpoint: /upload-broadcast-ecg
+app.post("/upload-ecg-to-all-docctors", broadcastUpload.single("file"), async (req, res) => {
+  try {
+    const file = req.file;
+    const senderId = req.headers["senderid"];
+    const emergencyLevel = req.body.emergencyLevel;
+
+    if (!file) {
+      return res.status(400).json({ error: "No file uploaded." });
+    }
+
+    if (!senderId || !emergencyLevel) {
+      return res.status(400).json({ error: "Missing senderId or emergencyLevel." });
+    }
+
+    // ✅ Save to the new collection
+    const broadcastECG = await BroadcastECG.create({
+      senderId,
+      filePath: file.path,
+      emergencyLevel
+    });
+
+    res.status(200).json({
+      message: "Broadcast ECG uploaded successfully.",
+      filename: file.filename,
+      path: file.path,
+      senderId,
+      emergencyLevel
+    });
+
+  } catch (error) {
+    console.error("❌ Broadcast ECG Upload Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 // Start Server

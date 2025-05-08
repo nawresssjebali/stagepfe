@@ -11,7 +11,7 @@
     <h3>📤 ECG Actions</h3>
     <div class="nav-link" (click)="onSendToDoctor()">Send to Doctor</div>
 
-    <div class="nav-link">Send to All Cardiologists</div>
+    <div class="nav-link" (click)="onSendToAllDoctor()">Send to All Cardiologists</div>
     <div class="nav-link">Modify & Save Draft</div>
     <div class="nav-link">AI ECG Interpretation</div>
     <h3>📅 Consultations</h3>
@@ -35,6 +35,51 @@
 
   <!-- Main content -->
   <div class="dashboard-wrapper">
+    <div *ngIf="activeSection === 'alldoctors'" class="send-ecg-container">
+      <h2>Send an ECG File</h2>
+  
+      <!-- File input -->
+      <input type="file" (change)="onECGFileSelected($event)" />
+  
+      <!-- Upload status message -->
+      <p *ngIf="ecgUploadMessage">{{ ecgUploadMessage }}</p>
+  
+      <!-- Selected file name -->
+      <div *ngIf="selectedECGFile" class="file-info">
+        Selected file: {{ selectedECGFile.name }}
+      </div>
+  
+      <!-- Emergency Level Buttons -->
+      <div class="emergency-buttons">
+        <label class="emergency-label">Emergency Level:</label>
+        <div class="btn-group">
+          <button class="emergency-btn"
+                  [class.selected]="emergencyLevel === 'normal'"
+                  (click)="emergencyLevel = 'normal'">
+            Normal
+          </button>
+          <button class="emergency-btn"
+                  [class.selected]="emergencyLevel === 'urgent'"
+                  (click)="emergencyLevel = 'urgent'">
+            Urgent
+          </button>
+          <button class="emergency-btn"
+                  [class.selected]="emergencyLevel === 'critical'"
+                  (click)="emergencyLevel = 'critical'">
+            Critical
+          </button>
+        </div>
+      </div>
+  
+      <!-- Upload button -->
+      <button class="nav-link-1" (click)="uploadECGFile_1()">Upload ECG</button>
+  
+      <!-- Success/Error Message -->
+      <div *ngIf="ecgUploadMessage" class="upload-message">
+        {{ ecgUploadMessage }}
+      </div>
+    </div>
+    
   
     <div class="events-container" *ngIf="activeSection === 'call'">
       <h2>📅 My Scheduled Calls</h2>
@@ -43,16 +88,16 @@
         <p>No scheduled calls yet.</p>
       </div>
     
-      <!-- Cards container -->
       <div class="event-list">
         <div *ngFor="let event of events" class="event-card">
           <h3>{{ event.title }}</h3>
           <p><strong>Date:</strong> {{ event.date | date: 'yyyy-MM-dd' }}</p>
           <p><strong>Time:</strong> {{ event.date | date: 'shortTime' }}</p>
     
+          <!-- Pass the date as a string (use the 'event.date.toISOString()' format) -->
           <button
-            (click)="joinCall(event.roomId, event.date)"
-            [disabled]="!canJoin(event.date)">
+            (click)="joinCall(event.roomId, event.date.toISOString())"
+            [disabled]="!canJoin(event.date.toISOString())">
             🎥 Join Video Call
           </button>
         </div>
